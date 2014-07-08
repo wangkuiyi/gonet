@@ -5,12 +5,12 @@ import (
 	"time"
 )
 
-func TestGonetAndClientCloseConnection(t *testing.T) {
-	type payload struct {
-		Greeting string
-	}
-	var p payload
+type payload struct {
+	Greeting string
+}
 
+func TestGonetAndClientCloseConnection(t *testing.T) {
+	var p payload
 	r, e := MakeChan(":8080", &p)
 	if e != nil {
 		t.Skipf("Failed MakeChan: %v", e)
@@ -44,11 +44,7 @@ func TestGonetAndClientCloseConnection(t *testing.T) {
 }
 
 func TestGonetAndServerCloseConnection(t *testing.T) {
-	type payload struct {
-		Greeting string
-	}
 	var p payload
-
 	r, e := MakeChan(":8080", &p)
 	if e != nil {
 		t.Skipf("Failed MakeChan: %v", e)
@@ -65,7 +61,7 @@ func TestGonetAndServerCloseConnection(t *testing.T) {
 		t.Skipf("Expecting receiving hello, got %s", v.(*payload).Greeting)
 	}
 
-	close(r)
+	CloseChan(":8080")
 	time.Sleep(100 * time.Millisecond)
 
 	defer func() {
@@ -75,5 +71,5 @@ func TestGonetAndServerCloseConnection(t *testing.T) {
 	}()
 	w <- &payload{"world!"}
 
-	CloseChan(":8080")
+	time.Sleep(100 * time.Millisecond)
 }
